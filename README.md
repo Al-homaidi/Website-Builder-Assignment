@@ -1,36 +1,155 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Website Builder - Rekaz Hiring Assignment
 
-## Getting Started
+A modern, responsive website builder built with Next.js 15, TypeScript, and Tailwind CSS. This application allows users to create beautiful websites by dragging and dropping pre-built sections, editing their properties, and exporting/importing configurations.
 
-First, run the development server:
+## 🚀 Features
 
+### Core Functionality
+- **Section Library**: Click-to-add pre-built sections (Header, Hero, Features, About, Contact, Footer)
+- **Live Preview**: Real-time preview of the website as you build
+- **Drag & Drop**: Reorder sections by dragging and dropping
+- **Section Editing**: Edit section properties (title, description, colors, images)
+- **Import/Export**: Save and load website configurations as JSON files
+- **Responsive Design**: Fully responsive across all screen sizes
+
+### Technical Features
+- **SSR Friendly**: Built with Next.js 15 and proper client component structure
+- **Performance Optimized**: Minimal re-renders with React.useCallback and proper state management
+- **TypeScript**: Full type safety throughout the application
+- **Modern UI**: Beautiful, modern interface with smooth animations and transitions
+- **Accessibility**: Proper ARIA labels and keyboard navigation support
+
+## 🛠️ Tech Stack
+
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS 4
+- **Drag & Drop**: @dnd-kit/core and @dnd-kit/sortable
+- **Icons**: Lucide React
+- **State Management**: React useState and useCallback hooks
+
+## 📦 Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd assignment
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Run the development server:
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Learn More
+## 🎯 How to Use
 
-To learn more about Next.js, take a look at the following resources:
+### Building a Website
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **Add Sections**: Click on sections from the left sidebar to add them to your website
+2. **Reorder Sections**: Drag and drop sections to reorder them
+3. **Edit Sections**: Click the edit button (pencil icon) on any section to modify its properties
+4. **Delete Sections**: Click the delete button (trash icon) to remove sections
+5. **Preview Mode**: Toggle preview mode to see your website without editing controls
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Import/Export
 
-## Deploy on Vercel
+- **Export**: Click the "Export" button to download your website configuration as a JSON file
+- **Import**: Click the "Import" button to load a previously saved configuration
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Section Types
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Header**: Navigation header with logo and menu items
+- **Hero**: Main banner section with call-to-action
+- **Features**: Grid layout showcasing key features or services
+- **About**: Company information with mission and values
+- **Contact**: Contact form and information
+- **Footer**: Footer with links and social media
+
+## 🏗️ Project Structure
+
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── layout.tsx         # Root layout
+│   ├── page.tsx           # Main page
+│   └── globals.css        # Global styles
+├── components/            # React components
+│   ├── sections/          # Section components
+│   │   ├── HeaderSection.tsx
+│   │   ├── HeroSection.tsx
+│   │   ├── FeaturesSection.tsx
+│   │   ├── AboutSection.tsx
+│   │   ├── ContactSection.tsx
+│   │   └── FooterSection.tsx
+│   ├── SectionLibrary.tsx     # Section library sidebar
+│   ├── SectionRenderer.tsx    # Dynamic section renderer
+│   ├── SectionEditor.tsx      # Section editing modal
+│   ├── SortableSection.tsx    # Drag-and-drop wrapper
+│   └── WebsiteBuilder.tsx     # Main builder component
+├── data/                 # Static data
+│   └── sectionTemplates.ts    # Pre-built section templates
+└── types/                # TypeScript type definitions
+    └── index.ts
+```
+
+## 🎨 Design Decisions
+
+### Performance Optimizations
+- Used `useCallback` for event handlers to prevent unnecessary re-renders
+- Implemented proper drag-and-drop with @dnd-kit for smooth interactions
+- Separated client and server components for optimal SSR performance
+
+### User Experience
+- Intuitive drag-and-drop interface
+- Real-time preview with smooth transitions
+- Responsive design that works on all devices
+- Clear visual feedback for all interactions
+
+### Code Quality
+- Full TypeScript implementation for type safety
+- Modular component architecture
+- Consistent naming conventions
+- Proper error handling
+
+## 🚀 Deployment
+
+The application is ready for deployment on Vercel, Netlify, or any other hosting platform that supports Next.js.
+
+### Vercel Deployment
+1. Push your code to GitHub
+2. Connect your repository to Vercel
+3. Deploy automatically
+
+### Build for Production
+```bash
+npm run build
+npm start
+```
+
+## 📝 Future Enhancements
+
+- Custom CSS editor for advanced styling
+- More section types and templates
+- Image upload functionality
+- Undo/redo functionality
+- Collaboration features
+- Template marketplace
+
+## 🤝 Contributing
+
+This is a hiring assignment submission. For questions or feedback, please contact the hiring team.
+
+## 📄 License
+
+This project is created for the Rekaz hiring assignment.
+
+---
+
+**Built with ❤️ using Next.js, TypeScript, and Tailwind CSS**
