@@ -27,7 +27,8 @@ import {
     Settings,
     Menu as MenuIcon,
     Pin,
-    X as CloseIcon
+    X as CloseIcon,
+    MoreVertical
 } from 'lucide-react';
 
 export default function WebsiteBuilderClient() {
@@ -36,6 +37,7 @@ export default function WebsiteBuilderClient() {
     const [isPreviewMode, setIsPreviewMode] = useState(false);
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [sidebarPinned, setSidebarPinned] = useState(true);
+    const [menuOpen, setMenuOpen] = useState(false);
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -138,7 +140,7 @@ export default function WebsiteBuilderClient() {
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
             <header className="bg-white shadow-sm border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="mx-auto px-4">
                     <div className="flex items-center justify-between h-16">
                         <div className="flex items-center gap-2">
                             {/* Sidebar toggle button (only if not pinned) */}
@@ -153,7 +155,9 @@ export default function WebsiteBuilderClient() {
                             )}
                             <h1 className="text-xl font-semibold text-gray-900">Website Builder</h1>
                         </div>
-                        <div className="flex items-center space-x-4">
+
+                        {/* Desktop buttons */}
+                        <div className="hidden md:flex items-center space-x-4">
                             <button
                                 onClick={() => setIsPreviewMode(!isPreviewMode)}
                                 className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${isPreviewMode
@@ -182,6 +186,62 @@ export default function WebsiteBuilderClient() {
                                 <Download className="w-4 h-4 mr-2" />
                                 Export
                             </button>
+                        </div>
+
+                        {/* Mobile menu button */}
+                        <div className="md:hidden relative">
+                            <button
+                                onClick={() => setMenuOpen(!menuOpen)}
+                                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                                aria-label="Open menu"
+                            >
+                                <MoreVertical className="w-6 h-6 text-gray-700" />
+                            </button>
+
+                            {/* Mobile dropdown menu */}
+                            {menuOpen && (
+                                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
+                                    <div className="py-2">
+                                        <button
+                                            onClick={() => {
+                                                setIsPreviewMode(!isPreviewMode);
+                                                setMenuOpen(false);
+                                            }}
+                                            className={`w-full flex items-center px-4 py-2 text-sm transition-colors duration-200 ${isPreviewMode
+                                                ? 'bg-blue-50 text-blue-700'
+                                                : 'text-gray-700 hover:bg-gray-50'
+                                                }`}
+                                        >
+                                            <Eye className="w-4 h-4 mr-3" />
+                                            {isPreviewMode ? 'Edit Mode' : 'Preview'}
+                                        </button>
+                                        <label className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors duration-200">
+                                            <Upload className="w-4 h-4 mr-3" />
+                                            Import
+                                            <input
+                                                type="file"
+                                                accept=".json"
+                                                onChange={(e) => {
+                                                    handleImport(e);
+                                                    setMenuOpen(false);
+                                                }}
+                                                className="hidden"
+                                            />
+                                        </label>
+                                        <button
+                                            onClick={() => {
+                                                handleExport();
+                                                setMenuOpen(false);
+                                            }}
+                                            disabled={sections.length === 0}
+                                            className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            <Download className="w-4 h-4 mr-3" />
+                                            Export
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
