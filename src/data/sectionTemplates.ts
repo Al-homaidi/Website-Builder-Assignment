@@ -12,7 +12,13 @@ export const sectionTemplates: SectionTemplate[] = [
             textColor: '#000000',
             content: {
                 logo: 'My Brand',
-                menuItems: ['Home', 'About', 'Services', 'Contact']
+                logoImage: '',
+                menuItems: [
+                    { text: 'Home', url: '#home' },
+                    { text: 'About', url: '#about' },
+                    { text: 'Services', url: '#services' },
+                    { text: 'Contact', url: '#contact' }
+                ]
             }
         }
     },
@@ -29,7 +35,9 @@ export const sectionTemplates: SectionTemplate[] = [
             imageUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop',
             content: {
                 ctaText: 'Get Started',
-                ctaLink: '#'
+                ctaLink: '#',
+                overlayColor: '#000000',
+                overlayOpacity: 40
             }
         }
     },
@@ -46,8 +54,8 @@ export const sectionTemplates: SectionTemplate[] = [
             content: {
                 features: [
                     { title: 'Feature 1', description: 'Amazing feature description', icon: 'Check' },
-                    { title: 'Feature 2', description: 'Another great feature', icon: 'Check' },
-                    { title: 'Feature 3', description: 'The best feature ever', icon: 'Check' }
+                    { title: 'Feature 2', description: 'Another great feature', icon: 'Zap' },
+                    { title: 'Feature 3', description: 'The best feature ever', icon: 'Star' }
                 ]
             }
         }

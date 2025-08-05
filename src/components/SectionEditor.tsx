@@ -15,15 +15,9 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const formData = new FormData(e.currentTarget);
 
         const updatedSection: Section = {
             ...section,
-            title: formData.get('title') as string,
-            description: formData.get('description') as string,
-            imageUrl: formData.get('imageUrl') as string,
-            backgroundColor: formData.get('backgroundColor') as string,
-            textColor: formData.get('textColor') as string,
             content: content
         };
 
@@ -70,28 +64,48 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
                 />
             </div>
             <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Logo Image URL</label>
+                <input
+                    type="url"
+                    value={(content.logoImage as string) || ''}
+                    onChange={(e) => updateContent('logoImage', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
+                    placeholder="https://example.com/logo.png"
+                />
+                <p className="text-xs text-gray-500 mt-1">Leave empty to use text logo</p>
+            </div>
+            <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Menu Items</label>
-                {(content.menuItems as string[])?.map((item: string, index: number) => (
-                    <div key={index} className="flex gap-2 mb-2">
-                        <input
-                            type="text"
-                            value={item}
-                            onChange={(e) => updateArrayContent('menuItems', index, e.target.value)}
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
-                            placeholder="Menu item"
-                        />
-                        <button
-                            type="button"
-                            onClick={() => removeArrayItem('menuItems', index)}
-                            className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg"
-                        >
-                            <Minus className="w-4 h-4" />
-                        </button>
+                {(content.menuItems as any[])?.map((item: any, index: number) => (
+                    <div key={index} className="space-y-2 mb-4 p-3 border border-gray-200 rounded-lg">
+                        <div className="flex gap-2">
+                            <input
+                                type="text"
+                                value={item?.text || ''}
+                                onChange={(e) => updateArrayContent('menuItems', index, { ...item, text: e.target.value })}
+                                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
+                                placeholder="Menu item text"
+                            />
+                            <input
+                                type="text"
+                                value={item?.url || ''}
+                                onChange={(e) => updateArrayContent('menuItems', index, { ...item, url: e.target.value })}
+                                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
+                                placeholder="Menu item URL (e.g., #home, /about)"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => removeArrayItem('menuItems', index)}
+                                className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg"
+                            >
+                                <Minus className="w-4 h-4" />
+                            </button>
+                        </div>
                     </div>
                 ))}
                 <button
                     type="button"
-                    onClick={() => addArrayItem('menuItems', 'New Item')}
+                    onClick={() => addArrayItem('menuItems', { text: 'New Item', url: '#new-item' })}
                     className="flex items-center gap-2 text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg"
                 >
                     <Plus className="w-4 h-4" />
@@ -103,6 +117,36 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
 
     const renderHeroEditor = () => (
         <div className="space-y-4">
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                <input
+                    type="text"
+                    value={(content.title as string) || ''}
+                    onChange={(e) => updateContent('title', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
+                    placeholder="Welcome to our website"
+                />
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                <textarea
+                    value={(content.description as string) || ''}
+                    onChange={(e) => updateContent('description', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
+                    placeholder="Your hero section description"
+                    rows={3}
+                />
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Background Image URL</label>
+                <input
+                    type="url"
+                    value={(content.imageUrl as string) || ''}
+                    onChange={(e) => updateContent('imageUrl', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
+                    placeholder="https://example.com/hero-image.jpg"
+                />
+            </div>
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">CTA Text</label>
                 <input
@@ -153,58 +197,100 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
 
     const renderFeaturesEditor = () => (
         <div className="space-y-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Features</label>
-            {(content.features as any[])?.map((feature: any, index: number) => (
-                <div key={index} className="border border-gray-200 rounded-lg p-4 space-y-3">
-                    <div className="flex justify-between items-center">
-                        <h4 className="font-medium">Feature {index + 1}</h4>
-                        <button
-                            type="button"
-                            onClick={() => removeArrayItem('features', index)}
-                            className="text-red-600 hover:bg-red-50 p-1 rounded"
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                <input
+                    type="text"
+                    value={(content.title as string) || ''}
+                    onChange={(e) => updateContent('title', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
+                    placeholder="Our Features"
+                />
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                <textarea
+                    value={(content.description as string) || ''}
+                    onChange={(e) => updateContent('description', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
+                    placeholder="Features section description"
+                    rows={3}
+                />
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Features</label>
+                {(content.features as any[])?.map((feature: any, index: number) => (
+                    <div key={index} className="border border-gray-200 rounded-lg p-4 space-y-3">
+                        <div className="flex justify-between items-center">
+                            <h4 className="font-medium">Feature {index + 1}</h4>
+                            <button
+                                type="button"
+                                onClick={() => removeArrayItem('features', index)}
+                                className="text-red-600 hover:bg-red-50 p-1 rounded"
+                            >
+                                <Minus className="w-4 h-4" />
+                            </button>
+                        </div>
+                        <input
+                            type="text"
+                            value={feature.title || ''}
+                            onChange={(e) => updateArrayContent('features', index, { ...feature, title: e.target.value })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
+                            placeholder="Feature title"
+                        />
+                        <textarea
+                            value={feature.description || ''}
+                            onChange={(e) => updateArrayContent('features', index, { ...feature, description: e.target.value })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
+                            placeholder="Feature description"
+                            rows={2}
+                        />
+                        <select
+                            value={feature.icon || 'Check'}
+                            onChange={(e) => updateArrayContent('features', index, { ...feature, icon: e.target.value })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
                         >
-                            <Minus className="w-4 h-4" />
-                        </button>
+                            <option value="Check">Check</option>
+                            <option value="Zap">Zap</option>
+                            <option value="Star">Star</option>
+                            <option value="Shield">Shield</option>
+                        </select>
                     </div>
-                    <input
-                        type="text"
-                        value={feature.title || ''}
-                        onChange={(e) => updateArrayContent('features', index, { ...feature, title: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
-                        placeholder="Feature title"
-                    />
-                    <textarea
-                        value={feature.description || ''}
-                        onChange={(e) => updateArrayContent('features', index, { ...feature, description: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
-                        placeholder="Feature description"
-                        rows={2}
-                    />
-                    <select
-                        value={feature.icon || 'Check'}
-                        onChange={(e) => updateArrayContent('features', index, { ...feature, icon: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
-                    >
-                        <option value="Check">Check</option>
-                        <option value="Zap">Zap</option>
-                        <option value="Star">Star</option>
-                        <option value="Shield">Shield</option>
-                    </select>
-                </div>
-            ))}
-            <button
-                type="button"
-                onClick={() => addArrayItem('features', { title: 'New Feature', description: 'Feature description', icon: 'Check' })}
-                className="flex items-center gap-2 text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg"
-            >
-                <Plus className="w-4 h-4" />
-                Add Feature
-            </button>
+                ))}
+                <button
+                    type="button"
+                    onClick={() => addArrayItem('features', { title: 'New Feature', description: 'Feature description', icon: 'Check' })}
+                    className="flex items-center gap-2 text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg"
+                >
+                    <Plus className="w-4 h-4" />
+                    Add Feature
+                </button>
+            </div>
         </div>
     );
 
     const renderAboutEditor = () => (
         <div className="space-y-4">
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                <input
+                    type="text"
+                    value={(content.title as string) || ''}
+                    onChange={(e) => updateContent('title', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
+                    placeholder="About Us"
+                />
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                <textarea
+                    value={(content.description as string) || ''}
+                    onChange={(e) => updateContent('description', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
+                    placeholder="About section description"
+                    rows={3}
+                />
+            </div>
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Mission</label>
                 <textarea
@@ -250,6 +336,26 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
     const renderContactEditor = () => (
         <div className="space-y-4">
             <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                <input
+                    type="text"
+                    value={(content.title as string) || ''}
+                    onChange={(e) => updateContent('title', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
+                    placeholder="Contact Us"
+                />
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                <textarea
+                    value={(content.description as string) || ''}
+                    onChange={(e) => updateContent('description', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
+                    placeholder="Contact section description"
+                    rows={3}
+                />
+            </div>
+            <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                 <input
                     type="email"
@@ -284,6 +390,26 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
 
     const renderFooterEditor = () => (
         <div className="space-y-4">
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                <input
+                    type="text"
+                    value={(content.title as string) || ''}
+                    onChange={(e) => updateContent('title', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
+                    placeholder="Footer Title"
+                />
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                <textarea
+                    value={(content.description as string) || ''}
+                    onChange={(e) => updateContent('description', e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
+                    placeholder="Footer description"
+                    rows={3}
+                />
+            </div>
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Copyright Text</label>
                 <input
@@ -365,78 +491,6 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        {/* Basic Properties */}
-                        <div className="border-b border-gray-200 pb-4">
-                            <h3 className="text-lg font-medium text-gray-900 mb-4">Basic Properties</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                                        <Type className="w-4 h-4 mr-2" />
-                                        Title
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="title"
-                                        defaultValue={section.title}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
-                                        placeholder="Section title"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                                        <Image className="w-4 h-4 mr-2" />
-                                        Image URL
-                                    </label>
-                                    <input
-                                        type="url"
-                                        name="imageUrl"
-                                        defaultValue={section.imageUrl}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
-                                        placeholder="https://example.com/image.jpg"
-                                    />
-                                </div>
-                            </div>
-                            <div className="mt-4">
-                                <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                                    <Type className="w-4 h-4 mr-2" />
-                                    Description
-                                </label>
-                                <textarea
-                                    name="description"
-                                    defaultValue={section.description}
-                                    rows={3}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
-                                    placeholder="Section description"
-                                />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4 mt-4">
-                                <div>
-                                    <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                                        <Palette className="w-4 h-4 mr-2" />
-                                        Background Color
-                                    </label>
-                                    <input
-                                        type="color"
-                                        name="backgroundColor"
-                                        defaultValue={section.backgroundColor || '#ffffff'}
-                                        className="w-full h-10 border border-gray-300 rounded-lg cursor-pointer"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                                        <Palette className="w-4 h-4 mr-2" />
-                                        Text Color
-                                    </label>
-                                    <input
-                                        type="color"
-                                        name="textColor"
-                                        defaultValue={section.textColor || '#000000'}
-                                        className="w-full h-10 border border-gray-300 rounded-lg cursor-pointer"
-                                    />
-                                </div>
-                            </div>
-                        </div>
-
                         {/* Section Specific Content */}
                         <div>
                             <h3 className="text-lg font-medium text-gray-900 mb-4">Section Content</h3>

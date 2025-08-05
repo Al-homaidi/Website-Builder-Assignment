@@ -12,103 +12,107 @@ export default function ContactSection({ section, isEditing, onEdit }: ContactSe
     const email = (content.email as string) || 'contact@example.com';
     const phone = (content.phone as string) || '+1 (555) 123-4567';
     const address = (content.address as string) || '123 Main St, City, State 12345';
+    const title = (content.title as string) || section.title || 'Get In Touch';
+    const description = (content.description as string) || section.description;
+    const backgroundColor = (content.backgroundColor as string) || section.backgroundColor || '#ffffff';
+    const textColor = (content.textColor as string) || section.textColor || '#1e293b';
 
     return (
         <section
-            className="w-full py-16 px-6"
+            className="w-full py-[4vw] px-[1.5vw]"
             style={{
-                backgroundColor: section.backgroundColor || '#ffffff',
-                color: section.textColor || '#1e293b'
+                backgroundColor: backgroundColor,
+                color: textColor
             }}
         >
             <div className="max-w-6xl mx-auto">
-                <div className="text-center mb-12">
-                    <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                        {section.title || 'Get In Touch'}
+                <div className="text-center mb-[3vw]">
+                    <h2 className="text-[2.5vw] md:text-[3vw] font-bold mb-[1vw]">
+                        {title}
                     </h2>
-                    {section.description && (
-                        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                            {section.description}
+                    {description && (
+                        <p className="text-[1.2vw] text-gray-600 max-w-2xl mx-auto">
+                            {description}
                         </p>
                     )}
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                    <div className="space-y-8">
-                        <div className="flex items-start space-x-4">
-                            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <Mail className="w-6 h-6 text-blue-600" />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-[3vw]">
+                    <div className="space-y-[2vw]">
+                        <div className="flex items-start space-x-[1vw]">
+                            <div className="w-[3vw] h-[3vw] bg-blue-100 rounded-[0.5vw] flex items-center justify-center flex-shrink-0">
+                                <Mail className="w-[1.5vw] h-[1.5vw] text-blue-600" />
                             </div>
                             <div>
-                                <h3 className="text-lg font-semibold mb-2">Email</h3>
+                                <h3 className="text-[1.2vw] font-semibold mb-[0.5vw]">Email</h3>
                                 <p className="text-gray-600">{email}</p>
                             </div>
                         </div>
 
-                        <div className="flex items-start space-x-4">
-                            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <Phone className="w-6 h-6 text-blue-600" />
+                        <div className="flex items-start space-x-[1vw]">
+                            <div className="w-[3vw] h-[3vw] bg-blue-100 rounded-[0.5vw] flex items-center justify-center flex-shrink-0">
+                                <Phone className="w-[1.5vw] h-[1.5vw] text-blue-600" />
                             </div>
                             <div>
-                                <h3 className="text-lg font-semibold mb-2">Phone</h3>
+                                <h3 className="text-[1.2vw] font-semibold mb-[0.5vw]">Phone</h3>
                                 <p className="text-gray-600">{phone}</p>
                             </div>
                         </div>
 
-                        <div className="flex items-start space-x-4">
-                            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                                <MapPin className="w-6 h-6 text-blue-600" />
+                        <div className="flex items-start space-x-[1vw]">
+                            <div className="w-[3vw] h-[3vw] bg-blue-100 rounded-[0.5vw] flex items-center justify-center flex-shrink-0">
+                                <MapPin className="w-[1.5vw] h-[1.5vw] text-blue-600" />
                             </div>
                             <div>
-                                <h3 className="text-lg font-semibold mb-2">Address</h3>
+                                <h3 className="text-[1.2vw] font-semibold mb-[0.5vw]">Address</h3>
                                 <p className="text-gray-600">{address}</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-gray-50 p-8 rounded-lg">
-                        <form className="space-y-6">
+                    <div className="bg-gray-50 p-[2vw] rounded-[0.5vw]">
+                        <form className="space-y-[1.5vw]">
                             <div>
-                                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label htmlFor="name" className="block text-[0.9vw] font-medium text-gray-700 mb-[0.5vw]">
                                     Name
                                 </label>
                                 <input
                                     type="text"
                                     id="name"
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-[1vw] py-[0.8vw] border border-gray-300 rounded-[0.5vw] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     placeholder="Your name"
                                 />
                             </div>
 
                             <div>
-                                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label htmlFor="email" className="block text-[0.9vw] font-medium text-gray-700 mb-[0.5vw]">
                                     Email
                                 </label>
                                 <input
                                     type="email"
                                     id="email"
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-[1vw] py-[0.8vw] border border-gray-300 rounded-[0.5vw] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     placeholder="your@email.com"
                                 />
                             </div>
 
                             <div>
-                                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label htmlFor="message" className="block text-[0.9vw] font-medium text-gray-700 mb-[0.5vw]">
                                     Message
                                 </label>
                                 <textarea
                                     id="message"
                                     rows={4}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-[1vw] py-[0.8vw] border border-gray-300 rounded-[0.5vw] focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     placeholder="Your message..."
                                 ></textarea>
                             </div>
 
                             <button
                                 type="submit"
-                                className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center"
+                                className="w-full bg-blue-600 text-white py-[0.8vw] px-[1.5vw] rounded-[0.5vw] font-semibold hover:bg-blue-700 transition-colors duration-200 flex items-center justify-center"
                             >
-                                <Send className="w-5 h-5 mr-2" />
+                                <Send className="w-[1.2vw] h-[1.2vw] mr-[0.5vw]" />
                                 Send Message
                             </button>
                         </form>

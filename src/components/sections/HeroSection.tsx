@@ -13,20 +13,25 @@ export default function HeroSection({ section, isEditing, onEdit }: HeroSectionP
     const ctaLink = (content.ctaLink as string) || '#';
     const overlayColor = (content.overlayColor as string) || '#000000';
     const overlayOpacity = (content.overlayOpacity as number) || 40;
+    const title = (content.title as string) || section.title || 'Welcome to Our Website';
+    const description = (content.description as string) || section.description;
+    const imageUrl = (content.imageUrl as string) || section.imageUrl;
+    const backgroundColor = (content.backgroundColor as string) || section.backgroundColor || '#f8fafc';
+    const textColor = (content.textColor as string) || section.textColor || '#1e293b';
 
     return (
         <section
-            className="relative w-full min-h-[500px] flex items-center justify-center overflow-hidden"
+            className="relative w-full min-h-[50vw] sm:h-[75vh] flex items-center justify-center overflow-hidden"
             style={{
-                backgroundColor: section.backgroundColor || '#f8fafc',
-                color: section.textColor || '#1e293b'
+                backgroundColor: backgroundColor,
+                color: textColor
             }}
         >
             {/* Background Image - z-0 */}
-            {section.imageUrl && (
+            {imageUrl && (
                 <div className="absolute inset-0 z-0">
                     <img
-                        src={section.imageUrl}
+                        src={imageUrl}
                         alt="Hero background"
                         className="w-full h-full object-cover"
                     />
@@ -43,18 +48,18 @@ export default function HeroSection({ section, isEditing, onEdit }: HeroSectionP
             ></div>
 
             {/* Content - z-20 */}
-            <div className="relative z-20 max-w-4xl mx-auto px-6 text-center">
-                <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-                    {section.title || 'Welcome to Our Website'}
+            <div className="relative z-20 max-w-4xl mx-auto px-[1.5vw] text-center">
+                <h1 className="text-[3vw] md:text-[4vw] font-bold mb-[1.5vw] leading-tight">
+                    {title}
                 </h1>
-                {section.description && (
-                    <p className="text-xl md:text-2xl mb-8 text-gray-600 max-w-2xl mx-auto">
-                        {section.description}
+                {description && (
+                    <p className="text-[1.2vw] md:text-[1.5vw] mb-[2vw] text-gray-600 max-w-2xl mx-auto">
+                        {description}
                     </p>
                 )}
-                <button className="inline-flex items-center px-8 py-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                <button className="inline-flex items-center px-[2vw] py-[1vw] bg-blue-600 text-white font-semibold rounded-[0.5vw] hover:bg-blue-700 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
                     {ctaText}
-                    <ArrowRight className="ml-2 w-5 h-5" />
+                    <ArrowRight className="ml-[0.5vw] w-[1.2vw] h-[1.2vw]" />
                 </button>
             </div>
         </section>

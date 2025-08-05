@@ -18,6 +18,8 @@ export default function FooterSection({ section, isEditing, onEdit }: FooterSect
     const content = section.content || {};
     const copyright = (content.copyright as string) || '© 2024 My Website. All rights reserved.';
     const socialLinks = (content.socialLinks as string[]) || ['Twitter', 'Facebook', 'LinkedIn', 'Instagram'];
+    const title = (content.title as string) || section.title || 'My Website';
+    const description = (content.description as string) || section.description || 'Creating amazing digital experiences with modern web technologies.';
 
     return (
         <footer
@@ -30,9 +32,9 @@ export default function FooterSection({ section, isEditing, onEdit }: FooterSect
             <div className="max-w-6xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div className="col-span-1 md:col-span-2">
-                        <h3 className="text-xl font-bold mb-4">My Website</h3>
+                        <h3 className="text-xl font-bold mb-4">{title}</h3>
                         <p className="text-gray-300 mb-6 max-w-md">
-                            Creating amazing digital experiences with modern web technologies.
+                            {description}
                         </p>
                         <div className="flex space-x-4">
                             {socialLinks.map((social: string, index: number) => {
