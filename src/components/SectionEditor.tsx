@@ -5,7 +5,7 @@ import { X, Plus, Minus, } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Define types for array items
+
 interface MenuItem {
     text: string;
     url: string;

@@ -35,7 +35,7 @@ export default function SectionLibrary({ onAddSection }: SectionLibraryProps) {
             imageUrl: template.defaultContent.imageUrl,
             backgroundColor: template.defaultContent.backgroundColor,
             textColor: template.defaultContent.textColor,
-            order: 0, // Will be set by parent component
+            order: 0,
             content: template.defaultContent.content
         };
         onAddSection(newSection);

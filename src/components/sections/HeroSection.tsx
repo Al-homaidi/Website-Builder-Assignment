@@ -31,7 +31,6 @@ export default function HeroSection({ section, isEditing, onEdit }: HeroSectionP
                 color: textColor
             }}
         >
-            {/* Background Image - z-0 */}
             {imageUrl ? (
                 <div className="absolute inset-0 z-0">
                     <img
@@ -44,7 +43,6 @@ export default function HeroSection({ section, isEditing, onEdit }: HeroSectionP
                 ""
             )}
 
-            {/* Overlay - z-10 */}
             <div
                 className="absolute inset-0 z-10"
                 style={{
@@ -53,7 +51,6 @@ export default function HeroSection({ section, isEditing, onEdit }: HeroSectionP
                 }}
             ></div>
 
-            {/* Content - z-20 */}
             <div className="relative z-20 max-w-4xl mx-auto px-[1.5vw] text-center">
                 <h1
                     className="sm:text-4xl font-bold mb-[1.5vw] leading-tight"

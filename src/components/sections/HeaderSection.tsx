@@ -83,7 +83,6 @@ export default function HeaderSection({ section, isEditing, onEdit }: HeaderSect
                 </div>
             </div>
 
-            {/* Mobile Menu */}
             {isMobileMenuOpen && (
                 <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg border-t border-gray-200 z-50">
                     <nav className="px-4 py-2">

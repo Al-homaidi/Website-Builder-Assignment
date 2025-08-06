@@ -1,21 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import {
-    DndContext,
-    closestCenter,
-    KeyboardSensor,
-    PointerSensor,
-    useSensor,
-    useSensors,
-    DragEndEvent,
-} from '@dnd-kit/core';
-import {
-    arrayMove,
-    SortableContext,
-    sortableKeyboardCoordinates,
-    verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { Section, WebsiteConfig } from '@/types';
 import SectionLibrary from './SectionLibrary';
 import SectionEditor from './SectionEditor';
@@ -42,7 +28,6 @@ export default function WebsiteBuilderClient() {
     const [sidebarPinned, setSidebarPinned] = useState(true);
     const [menuOpen, setMenuOpen] = useState(false);
 
-    // Load data from localStorage on component mount
     useEffect(() => {
         const savedSections = localStorage.getItem('websiteBuilder_sections');
         const savedSidebarPinned = localStorage.getItem('websiteBuilder_sidebarPinned');
@@ -79,18 +64,14 @@ export default function WebsiteBuilderClient() {
         }
     }, []);
 
-    // Save sections to localStorage whenever sections change
     useEffect(() => {
         localStorage.setItem('websiteBuilder_sections', JSON.stringify(sections));
-        showSaveNotification();
     }, [sections]);
 
-    // Save sidebar pinned state to localStorage
     useEffect(() => {
         localStorage.setItem('websiteBuilder_sidebarPinned', JSON.stringify(sidebarPinned));
     }, [sidebarPinned]);
 
-    // Save editing section to localStorage
     useEffect(() => {
         if (editingSection) {
             localStorage.setItem('websiteBuilder_editingSection', JSON.stringify(editingSection));
@@ -99,24 +80,15 @@ export default function WebsiteBuilderClient() {
         }
     }, [editingSection]);
 
-    // Save sidebar open state to localStorage
     useEffect(() => {
         localStorage.setItem('websiteBuilder_sidebarOpen', JSON.stringify(sidebarOpen));
     }, [sidebarOpen]);
 
-    // Save preview mode state to localStorage
     useEffect(() => {
         localStorage.setItem('websiteBuilder_previewMode', JSON.stringify(isPreviewMode));
     }, [isPreviewMode]);
 
 
-
-    const sensors = useSensors(
-        useSensor(PointerSensor),
-        useSensor(KeyboardSensor, {
-            coordinateGetter: sortableKeyboardCoordinates,
-        })
-    );
 
     const handleAddSection = (newSection: Section) => {
         setSections(prev => {
@@ -129,18 +101,21 @@ export default function WebsiteBuilderClient() {
         if (!sidebarPinned) setSidebarOpen(false);
     };
 
-    const handleDragEnd = (event: DragEndEvent) => {
-        const { active, over } = event;
-        if (over && active.id !== over.id) {
-            setSections(prev => {
-                const oldIndex = prev.findIndex(section => section.id === active.id);
-                const newIndex = prev.findIndex(section => section.id === over.id);
-                return arrayMove(prev, oldIndex, newIndex).map((section, index) => ({
-                    ...section,
-                    order: index
-                }));
-            });
-        }
+    const handleDragEnd = (result: DropResult) => {
+        const { source, destination } = result;
+        if (!destination) return;
+
+        setSections(prev => {
+            const oldIndex = source.index;
+            const newIndex = destination.index;
+            const newSections = [...prev];
+            const [removed] = newSections.splice(oldIndex, 1);
+            newSections.splice(newIndex, 0, removed);
+            return newSections.map((section, index) => ({
+                ...section,
+                order: index
+            }));
+        });
     };
 
     const handleEditSection = (section: Section) => {
@@ -234,17 +209,10 @@ export default function WebsiteBuilderClient() {
         }
     };
 
-    // Temporary notification function to fix build error
-    function showSaveNotification() {
-        // You can replace this with a real notification system
-        // For now, just log to the console
-        // console.log('Changes saved!');
-    }
 
 
     const sortedSections = sections.sort((a, b) => a.order - b.order);
 
-    // Overlay for sidebar (when not pinned)
     const overlay = (
         <AnimatePresence>
             {sidebarOpen && !sidebarPinned && (
@@ -462,26 +430,46 @@ export default function WebsiteBuilderClient() {
                                             </div>
                                         </div>
                                     ) : (
-                                        <DndContext
-                                            sensors={sensors}
-                                            collisionDetection={closestCenter}
-                                            onDragEnd={handleDragEnd}
-                                        >
-                                            <SortableContext
-                                                items={sortedSections.map(section => section.id)}
-                                                strategy={verticalListSortingStrategy}
-                                            >
-                                                {sortedSections.map((section) => (
-                                                    <SortableSection
-                                                        key={section.id}
-                                                        section={section}
-                                                        isPreviewMode={isPreviewMode}
-                                                        onEdit={handleEditSection}
-                                                        onDelete={handleDeleteSection}
-                                                    />
-                                                ))}
-                                            </SortableContext>
-                                        </DndContext>
+                                        <DragDropContext onDragEnd={handleDragEnd}>
+                                            <Droppable droppableId="sections">
+                                                {(provided, snapshot) => (
+                                                    <div
+                                                        {...provided.droppableProps}
+                                                        ref={provided.innerRef}
+                                                        className={`min-h-[600px] touch-none select-none ${snapshot.isDraggingOver ? 'bg-blue-50' : ''}`}
+                                                    >
+                                                        {sortedSections.map((section, index) => (
+                                                            <Draggable
+                                                                key={section.id}
+                                                                draggableId={section.id}
+                                                                index={index}
+                                                            >
+                                                                {(provided, snapshot) => (
+                                                                    <div
+                                                                        ref={provided.innerRef}
+                                                                        {...provided.draggableProps}
+                                                                        {...provided.dragHandleProps}
+                                                                        className={`${snapshot.isDragging ? 'opacity-50 rotate-2 shadow-lg' : ''}`}
+                                                                        style={{
+                                                                            ...provided.draggableProps.style,
+                                                                            touchAction: 'none',
+                                                                        }}
+                                                                    >
+                                                                        <SortableSection
+                                                                            section={section}
+                                                                            isPreviewMode={isPreviewMode}
+                                                                            onEdit={handleEditSection}
+                                                                            onDelete={handleDeleteSection}
+                                                                        />
+                                                                    </div>
+                                                                )}
+                                                            </Draggable>
+                                                        ))}
+                                                        {provided.placeholder}
+                                                    </div>
+                                                )}
+                                            </Droppable>
+                                        </DragDropContext>
                                     )}
                                 </div>
                             </div>

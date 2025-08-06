@@ -1,4 +1,4 @@
-# Website Builder - Rekaz Hiring Assignment
+# Website Builder Assignment
 
 A modern, responsive website builder built with Next.js 15, TypeScript, and Tailwind CSS. This application allows users to create beautiful websites by dragging and dropping pre-built sections, editing their properties, and exporting/importing configurations.
 
