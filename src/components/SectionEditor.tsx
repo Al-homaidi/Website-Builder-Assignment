@@ -190,8 +190,8 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Menu Items</label>
                 {(content.menuItems as MenuItem[])?.map((item: MenuItem, index: number) => (
-                    <div key={index} className="space-y-2 mb-4 p-3 border border-gray-200 rounded-lg">
-                        <div className="flex gap-2">
+                    <div key={index} className="space-y-2 mb-4 p-3  border border-gray-200 rounded-lg">
+                        <div className="grid md:grid-cols-2 grid-cols-1 gap-2">
                             <input
                                 type="text"
                                 value={item?.text || ''}
@@ -1025,7 +1025,7 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
                 {(content.sections as FooterSectionItem[])?.map((section: FooterSectionItem, index: number) => (
                     <div key={index} className="border border-gray-200 rounded-lg p-4 space-y-3 mb-4">
                         <div className="flex justify-between items-center">
-                            <h5 className="font-medium">Section {index + 1}</h5>
+                            <h5 className="font-medium text-gray-700">Section {index + 1}</h5>
                             <button
                                 type="button"
                                 onClick={() => removeArrayItem('sections', index)}
@@ -1078,7 +1078,7 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
                                 <label className="block text-xs text-gray-600 mb-1">Values</label>
                                 {(section.values ?? []).map((item: { text: string; url: string; isLink: boolean }, itemIndex: number) => (
                                     <div key={itemIndex} className="border border-gray-200 rounded p-2 mb-2">
-                                        <div className="flex gap-2 mb-2">
+                                        <div className="grid md:grid-cols-2 grid-cols-1q gap-2 mb-2">
                                             <input
                                                 type="text"
                                                 value={item.text || ''}
@@ -1090,29 +1090,31 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
                                                 className="flex-1 px-2 py-1 border text-gray-700 border-gray-300 rounded text-sm"
                                                 placeholder="Text"
                                             />
-                                            <input
-                                                type="text"
-                                                value={item.url || ''}
-                                                onChange={(e) => {
-                                                    const newValues = [...(section.values ?? [])];
-                                                    newValues[itemIndex] = { ...item, url: e.target.value };
-                                                    updateArrayContent('sections', index, { ...section, values: newValues });
-                                                }}
-                                                className="flex-1 px-2 py-1 border text-gray-700 border-gray-300 rounded text-sm"
-                                                placeholder="URL"
-                                            />
-                                            <label className="flex items-center gap-1 text-xs">
+                                            <div className='flex justify-between'>
                                                 <input
-                                                    type="checkbox"
-                                                    checked={item.isLink || false}
+                                                    type="text"
+                                                    value={item.url || ''}
                                                     onChange={(e) => {
                                                         const newValues = [...(section.values ?? [])];
-                                                        newValues[itemIndex] = { ...item, isLink: e.target.checked };
+                                                        newValues[itemIndex] = { ...item, url: e.target.value };
                                                         updateArrayContent('sections', index, { ...section, values: newValues });
                                                     }}
+                                                    className="flex-1 px-2 py-1 border text-gray-700 border-gray-300 rounded text-sm"
+                                                    placeholder="URL"
                                                 />
-                                                Link
-                                            </label>
+                                                <label className="flex items-center gap-1 text-xs">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={item.isLink || false}
+                                                        onChange={(e) => {
+                                                            const newValues = [...(section.values ?? [])];
+                                                            newValues[itemIndex] = { ...item, isLink: e.target.checked };
+                                                            updateArrayContent('sections', index, { ...section, values: newValues });
+                                                        }}
+                                                    />
+                                                    Link
+                                                </label>
+                                            </div>
                                             <button
                                                 type="button"
                                                 onClick={() => {
