@@ -26,6 +26,9 @@ export default function HeaderSection({ section, isEditing, onEdit }: HeaderSect
     const logoImage = (content.logoImage as string) || section.imageUrl;
     const backgroundColor = (content.backgroundColor as string) || section.backgroundColor || '#ffffff';
     const textColor = (content.textColor as string) || section.textColor || '#000000';
+    const logotextColor = (content.LogotextColor as string) || '#000000';
+    const menuItemsColor = (content.MenuItemsColor as string) || '#000000';
+    const roundedImage = (content.RoundedImage as string) || '100';
 
     const toggleMobileMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -45,10 +48,16 @@ export default function HeaderSection({ section, isEditing, onEdit }: HeaderSect
                         <img
                             src={logoImage}
                             alt={logo}
-                            className="w-[3vw] h-[3vw] object-cover rounded-full"
+                            className="w-[3vw] h-[3vw] object-cover"
+                            style={{ borderRadius: `${roundedImage}%` }}
                         />
                     ) : (
-                        <h1 className="font-bold">{logo}</h1>
+                        <h1
+                            className="font-bold"
+                            style={{ color: logotextColor }}
+                        >
+                            {logo}
+                        </h1>
                     )}
                     <nav className="hidden md:flex space-x-4">
                         {menuItems.map((item: MenuItem, index: number) => (
@@ -56,6 +65,7 @@ export default function HeaderSection({ section, isEditing, onEdit }: HeaderSect
                                 key={index}
                                 href={item.url}
                                 className="font-medium hover:opacity-75 transition-opacity duration-200"
+                                style={{ color: menuItemsColor }}
                             >
                                 {item.text}
                             </a>
@@ -66,6 +76,7 @@ export default function HeaderSection({ section, isEditing, onEdit }: HeaderSect
                     <button
                         onClick={toggleMobileMenu}
                         className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+                        style={{ color: menuItemsColor }}
                     >
                         {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                     </button>
@@ -80,8 +91,9 @@ export default function HeaderSection({ section, isEditing, onEdit }: HeaderSect
                             <a
                                 key={index}
                                 href={item.url}
-                                className="block text-base sm:text-lg md:text-xl lg:text-2xl py-3 px-4 font-medium hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                                className="block py-3 px-4 font-medium hover:bg-gray-50 rounded-lg transition-colors duration-200"
                                 onClick={() => setIsMobileMenuOpen(false)}
+                                style={{ color: menuItemsColor }}
                             >
                                 {item.text}
                             </a>

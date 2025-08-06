@@ -1,5 +1,5 @@
 import { Section } from '@/types';
-import { Twitter, Facebook, Linkedin, Instagram } from 'lucide-react';
+import { Twitter, Facebook, Linkedin, Instagram, Youtube, Github, Mail, Phone, MapPin, Heart } from 'lucide-react';
 
 interface FooterSectionProps {
     section: Section;
@@ -7,75 +7,184 @@ interface FooterSectionProps {
     onEdit?: (section: Section) => void;
 }
 
-const socialIcons = {
+const iconMap = {
     Twitter,
     Facebook,
     Linkedin,
-    Instagram
+    Instagram,
+    Youtube,
+    Github,
+    Mail,
+    Phone,
+    MapPin
 };
 
 export default function FooterSection({ section, isEditing, onEdit }: FooterSectionProps) {
     const content = section.content || {};
     const copyright = (content.copyright as string) || '© 2024 My Website. All rights reserved.';
-    const socialLinks = (content.socialLinks as string[]) || ['Twitter', 'Facebook', 'LinkedIn', 'Instagram'];
-    const title = (content.title as string) || section.title || 'My Website';
-    const description = (content.description as string) || section.description || 'Creating amazing digital experiences with modern web technologies.';
+    const title = (content.title as string) || section.title || 'Footer';
+    const description = (content.description as string) || section.description;
+    const backgroundColor = (content.backgroundColor as string) || section.backgroundColor || '#1e293b';
+    const textColor = (content.textColor as string) || section.textColor || '#ffffff';
+    const titleColor = (content.titleColor as string) || '#ffffff';
+    const descriptionColor = (content.descriptionColor as string) || '#cbd5e1';
+    const sections = (content.sections as any[]) || [
+        {
+            type: 'description',
+            title: 'Footer',
+            subtitle: 'Creating amazing digital experiences with modern web technologies.',
+            titleColor: '#ffffff',
+            subtitleColor: '#cbd5e1'
+        },
+        {
+            type: 'links',
+            title: 'Quick Links',
+            values: [
+                { text: 'Home', url: '#home', isLink: true },
+                { text: 'About', url: '#about', isLink: true },
+                { text: 'Services', url: '#services', isLink: true },
+                { text: 'Contact', url: '#contact', isLink: true }
+            ],
+            titleColor: '#ffffff',
+            valuesColor: '#cbd5e1'
+        },
+        {
+            type: 'contact',
+            title: 'Contact',
+            values: [
+                { text: 'contact@example.com', url: 'mailto:contact@example.com', isLink: true },
+                { text: '+1 (555) 123-4567', url: 'tel:+15551234567', isLink: true },
+                { text: '123 Main St, City, State', url: '', isLink: false }
+            ],
+            titleColor: '#ffffff',
+            valuesColor: '#cbd5e1'
+        },
+        {
+            type: 'social',
+            title: 'Follow Us',
+            socialLinks: [
+                { platform: 'Twitter', url: 'https://twitter.com', icon: 'Twitter', iconColor: '#1da1f2', iconBackgroundColor: '#1da1f2' },
+                { platform: 'Facebook', url: 'https://facebook.com', icon: 'Facebook', iconColor: '#1877f2', iconBackgroundColor: '#1877f2' },
+                { platform: 'LinkedIn', url: 'https://linkedin.com', icon: 'Linkedin', iconColor: '#0077b5', iconBackgroundColor: '#0077b5' },
+                { platform: 'Instagram', url: 'https://instagram.com', icon: 'Instagram', iconColor: '#e4405f', iconBackgroundColor: '#e4405f' },
+                { platform: 'YouTube', url: 'https://youtube.com', icon: 'Youtube', iconColor: '#ff0000', iconBackgroundColor: '#ff0000' },
+                { platform: 'GitHub', url: 'https://github.com', icon: 'Github', iconColor: '#333333', iconBackgroundColor: '#333333' }
+            ],
+            titleColor: '#ffffff'
+        }
+    ];
 
     return (
         <footer
-            className="w-full py-12 px-6"
+            className="w-full py-[4vw] px-[1.5vw]"
             style={{
-                backgroundColor: section.backgroundColor || '#1e293b',
-                color: section.textColor || '#ffffff'
+                backgroundColor: backgroundColor,
+                color: textColor
             }}
         >
             <div className="max-w-6xl mx-auto">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    <div className="col-span-1 md:col-span-2">
-                        <h3 className="text-xl font-bold mb-4">{title}</h3>
-                        <p className="text-gray-300 mb-6 max-w-md">
-                            {description}
-                        </p>
-                        <div className="flex space-x-4">
-                            {socialLinks.map((social: string, index: number) => {
-                                const IconComponent = socialIcons[social as keyof typeof socialIcons];
-                                if (!IconComponent) return null;
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[3vw] mb-[3vw]">
+                    {sections.map((section: any, index: number) => (
+                        <div key={index} className="space-y-[1vw]">
+                            <h3
+                                className="sm:text-2xl font-semibold mb-[1vw]"
+                                style={{ color: section.titleColor || '#ffffff' }}
+                            >
+                                {section.title}
+                            </h3>
 
-                                return (
-                                    <a
-                                        key={index}
-                                        href="#"
-                                        className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center hover:bg-blue-600 transition-colors duration-200"
-                                    >
-                                        <IconComponent className="w-5 h-5" />
-                                    </a>
-                                );
-                            })}
+                            {section.type === 'description' && (
+                                <p
+                                    className="leading-relaxed"
+                                    style={{ color: section.subtitleColor || '#cbd5e1' }}
+                                >
+                                    {section.subtitle}
+                                </p>
+                            )}
+
+                            {section.type === 'links' && (
+                                <ul className="space-y-[0.5vw]">
+                                    {section.values?.map((item: any, itemIndex: number) => (
+                                        <li key={itemIndex}>
+                                            {item.isLink ? (
+                                                <a
+                                                    href={item.url}
+                                                    className="hover:underline transition-colors duration-200"
+                                                    style={{ color: section.valuesColor || '#cbd5e1' }}
+                                                >
+                                                    {item.text}
+                                                </a>
+                                            ) : (
+                                                <span
+                                                    className=""
+                                                    style={{ color: section.valuesColor || '#cbd5e1' }}
+                                                >
+                                                    {item.text}
+                                                </span>
+                                            )}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+
+                            {section.type === 'contact' && (
+                                <ul className="space-y-[0.5vw]">
+                                    {section.values?.map((item: any, itemIndex: number) => (
+                                        <li key={itemIndex}>
+                                            {item.isLink ? (
+                                                <a
+                                                    href={item.url}
+                                                    className=" hover:underline transition-colors duration-200"
+                                                    style={{ color: section.valuesColor || '#cbd5e1' }}
+                                                >
+                                                    {item.text}
+                                                </a>
+                                            ) : (
+                                                <span
+                                                    className=""
+                                                    style={{ color: section.valuesColor || '#cbd5e1' }}
+                                                >
+                                                    {item.text}
+                                                </span>
+                                            )}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+
+                            {section.type === 'social' && (
+                                <div className="flex flex-wrap gap-[0.8vw]">
+                                    {section.socialLinks?.map((social: any, socialIndex: number) => {
+                                        const IconComponent = iconMap[social.icon as keyof typeof iconMap] || Twitter;
+                                        return (
+                                            <a
+                                                key={socialIndex}
+                                                href={social.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-[40px] h-[40px] rounded flex items-center justify-center transition-transform duration-200 hover:scale-110"
+                                                style={{ backgroundColor: social.iconBackgroundColor || '#1da1f2' }}
+                                            >
+                                                <IconComponent
+                                                    className="w-[100%] h-[50%]"
+                                                    style={{ color: social.iconColor || '#ffffff' }}
+                                                />
+                                            </a>
+                                        );
+                                    })}
+                                </div>
+                            )}
                         </div>
-                    </div>
-
-                    <div>
-                        <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
-                        <ul className="space-y-2">
-                            <li><a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">Home</a></li>
-                            <li><a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">About</a></li>
-                            <li><a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">Services</a></li>
-                            <li><a href="#" className="text-gray-300 hover:text-white transition-colors duration-200">Contact</a></li>
-                        </ul>
-                    </div>
-
-                    <div>
-                        <h4 className="text-lg font-semibold mb-4">Contact</h4>
-                        <ul className="space-y-2 text-gray-300">
-                            <li>contact@example.com</li>
-                            <li>+1 (555) 123-4567</li>
-                            <li>123 Main St, City, State</li>
-                        </ul>
-                    </div>
+                    ))}
                 </div>
 
-                <div className="border-t border-gray-700 mt-8 pt-8 text-center">
-                    <p className="text-gray-300">{copyright}</p>
+                <div className="border-t border-gray-600 pt-[2vw] text-center">
+                    <p
+                        className="flex items-center justify-center gap-[0.5vw]"
+                        style={{ color: descriptionColor }}
+                    >
+                        {copyright}
+                    </p>
                 </div>
             </div>
         </footer>

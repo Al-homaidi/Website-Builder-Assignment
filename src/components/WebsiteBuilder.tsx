@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import {
     DndContext,
     closestCenter,
@@ -18,6 +18,7 @@ import {
 } from '@dnd-kit/sortable';
 import { Section, WebsiteConfig } from '@/types';
 import SectionLibrary from './SectionLibrary';
+import SectionRenderer from './SectionRenderer';
 import SectionEditor from './SectionEditor';
 import SortableSection from './SortableSection';
 import {
@@ -28,8 +29,13 @@ import {
     Menu as MenuIcon,
     Pin,
     X as CloseIcon,
-    MoreVertical
+    MoreVertical,
+    PinOff,
+    Trash2,
+    Edit
 } from 'lucide-react';
+import Swal from 'sweetalert2';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function WebsiteBuilderClient() {
     const [sections, setSections] = useState<Section[]>([]);
@@ -38,6 +44,80 @@ export default function WebsiteBuilderClient() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [sidebarPinned, setSidebarPinned] = useState(true);
     const [menuOpen, setMenuOpen] = useState(false);
+    const [saveNotification, setSaveNotification] = useState(false);
+
+    // Load data from localStorage on component mount
+    useEffect(() => {
+        const savedSections = localStorage.getItem('websiteBuilder_sections');
+        const savedSidebarPinned = localStorage.getItem('websiteBuilder_sidebarPinned');
+        const savedEditingSection = localStorage.getItem('websiteBuilder_editingSection');
+        const savedSidebarOpen = localStorage.getItem('websiteBuilder_sidebarOpen');
+        const savedPreviewMode = localStorage.getItem('websiteBuilder_previewMode');
+
+        if (savedSections) {
+            try {
+                setSections(JSON.parse(savedSections));
+            } catch (error) {
+                console.error('Error loading sections from localStorage:', error);
+            }
+        }
+
+        if (savedSidebarPinned) {
+            setSidebarPinned(JSON.parse(savedSidebarPinned));
+        }
+
+        if (savedEditingSection) {
+            try {
+                setEditingSection(JSON.parse(savedEditingSection));
+            } catch (error) {
+                console.error('Error loading editing section from localStorage:', error);
+            }
+        }
+
+        if (savedSidebarOpen) {
+            setSidebarOpen(JSON.parse(savedSidebarOpen));
+        }
+
+        if (savedPreviewMode) {
+            setIsPreviewMode(JSON.parse(savedPreviewMode));
+        }
+    }, []);
+
+    // Save sections to localStorage whenever sections change
+    useEffect(() => {
+        localStorage.setItem('websiteBuilder_sections', JSON.stringify(sections));
+        showSaveNotification();
+    }, [sections]);
+
+    // Save sidebar pinned state to localStorage
+    useEffect(() => {
+        localStorage.setItem('websiteBuilder_sidebarPinned', JSON.stringify(sidebarPinned));
+    }, [sidebarPinned]);
+
+    // Save editing section to localStorage
+    useEffect(() => {
+        if (editingSection) {
+            localStorage.setItem('websiteBuilder_editingSection', JSON.stringify(editingSection));
+        } else {
+            localStorage.removeItem('websiteBuilder_editingSection');
+        }
+    }, [editingSection]);
+
+    // Save sidebar open state to localStorage
+    useEffect(() => {
+        localStorage.setItem('websiteBuilder_sidebarOpen', JSON.stringify(sidebarOpen));
+    }, [sidebarOpen]);
+
+    // Save preview mode state to localStorage
+    useEffect(() => {
+        localStorage.setItem('websiteBuilder_previewMode', JSON.stringify(isPreviewMode));
+    }, [isPreviewMode]);
+
+    const showSaveNotification = () => {
+        setSaveNotification(true);
+        setTimeout(() => setSaveNotification(false), 2000);
+    };
+
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -46,7 +126,7 @@ export default function WebsiteBuilderClient() {
         })
     );
 
-    const handleAddSection = useCallback((newSection: Section) => {
+    const handleAddSection = (newSection: Section) => {
         setSections(prev => {
             const sectionWithOrder = {
                 ...newSection,
@@ -55,9 +135,9 @@ export default function WebsiteBuilderClient() {
             return [...prev, sectionWithOrder];
         });
         if (!sidebarPinned) setSidebarOpen(false);
-    }, [sidebarPinned]);
+    };
 
-    const handleDragEnd = useCallback((event: DragEndEvent) => {
+    const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
         if (over && active.id !== over.id) {
             setSections(prev => {
@@ -69,29 +149,29 @@ export default function WebsiteBuilderClient() {
                 }));
             });
         }
-    }, []);
+    };
 
-    const handleEditSection = useCallback((section: Section) => {
+    const handleEditSection = (section: Section) => {
         setEditingSection(section);
-    }, []);
+    };
 
-    const handleSaveSection = useCallback((updatedSection: Section) => {
+    const handleSaveSection = (updatedSection: Section) => {
         setSections(prev =>
             prev.map(section =>
                 section.id === updatedSection.id ? updatedSection : section
             )
         );
         setEditingSection(null);
-    }, []);
+    };
 
-    const handleDeleteSection = useCallback((sectionId: string) => {
+    const handleDeleteSection = (sectionId: string) => {
         setSections(prev =>
             prev.filter(section => section.id !== sectionId)
                 .map((section, index) => ({ ...section, order: index }))
         );
-    }, []);
+    };
 
-    const handleExport = useCallback(() => {
+    const handleExport = () => {
         const config: WebsiteConfig = {
             id: `website-${Date.now()}`,
             name: 'My Website',
@@ -108,9 +188,9 @@ export default function WebsiteBuilderClient() {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-    }, [sections]);
+    };
 
-    const handleImport = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleImport = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
         const reader = new FileReader();
@@ -124,17 +204,63 @@ export default function WebsiteBuilderClient() {
             }
         };
         reader.readAsText(file);
-    }, []);
+    };
+
+
+    const handleClearAllData = async () => {
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: 'This will remove all sections and settings. This action cannot be undone.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, clear all',
+            cancelButtonText: 'Cancel'
+        });
+
+        if (result.isConfirmed) {
+            setSections([]);
+            setEditingSection(null);
+            setSidebarOpen(false);
+            setSidebarPinned(true);
+            setIsPreviewMode(false);
+
+            localStorage.removeItem('websiteBuilder_sections');
+            localStorage.removeItem('websiteBuilder_editingSection');
+            localStorage.removeItem('websiteBuilder_sidebarOpen');
+            localStorage.removeItem('websiteBuilder_sidebarPinned');
+            localStorage.removeItem('websiteBuilder_previewMode');
+
+            await Swal.fire({
+                title: 'Cleared!',
+                text: 'All data has been removed.',
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+    };
+
 
     const sortedSections = sections.sort((a, b) => a.order - b.order);
 
     // Overlay for sidebar (when not pinned)
-    const overlay = sidebarOpen && !sidebarPinned ? (
-        <div
-            className="fixed inset-0 bg-opacity-30 z-30"
-            onClick={() => setSidebarOpen(false)}
-        />
-    ) : null;
+    const overlay = (
+        <AnimatePresence>
+            {sidebarOpen && !sidebarPinned && (
+                <motion.div
+                    key="sidebar-overlay"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 0.3 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="fixed inset-0 bg-black z-30"
+                    onClick={() => setSidebarOpen(false)}
+                />
+            )}
+        </AnimatePresence>
+    );
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -168,24 +294,32 @@ export default function WebsiteBuilderClient() {
                                 <Eye className="w-4 h-4 mr-2" />
                                 {isPreviewMode ? 'Edit Mode' : 'Preview'}
                             </button>
-                            <label className="flex items-center px-3 py-2 bg-green-100 text-green-700 rounded-lg text-sm font-medium hover:bg-green-200 transition-colors duration-200 cursor-pointer">
-                                <Upload className="w-4 h-4 mr-2" />
-                                Import
-                                <input
-                                    type="file"
-                                    accept=".json"
-                                    onChange={handleImport}
-                                    className="hidden"
-                                />
-                            </label>
-                            <button
-                                onClick={handleExport}
-                                disabled={sections.length === 0}
-                                className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                <Download className="w-4 h-4 mr-2" />
-                                Export
-                            </button>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={handleExport}
+                                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                >
+                                    <Download className="w-4 h-4" />
+                                    Export
+                                </button>
+                                <label className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors cursor-pointer">
+                                    <Upload className="w-4 h-4" />
+                                    Import
+                                    <input
+                                        type="file"
+                                        accept=".json"
+                                        onChange={handleImport}
+                                        className="hidden"
+                                    />
+                                </label>
+                                <button
+                                    onClick={handleClearAllData}
+                                    className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                    Clear All Data
+                                </button>
+                            </div>
                         </div>
 
                         {/* Mobile menu button */}
@@ -239,6 +373,13 @@ export default function WebsiteBuilderClient() {
                                             <Download className="w-4 h-4 mr-3" />
                                             Export
                                         </button>
+                                        <button
+                                            onClick={handleClearAllData}
+                                            className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                                        >
+                                            <Trash2 className="w-4 h-4 mr-3" />
+                                            Clear All Data
+                                        </button>
                                     </div>
                                 </div>
                             )}
@@ -263,32 +404,41 @@ export default function WebsiteBuilderClient() {
                 ) : (
                     <>
                         {overlay}
-                        <div
-                            className={`fixed top-0 left-0 bottom-0 w-80 z-40 bg-white border-r border-gray-200 shadow-lg transform transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}
-                        >
-                            <div className="flex items-center justify-between p-4 border-b border-gray-100">
-                                <h2 className="text-lg font-semibold text-gray-900">Section Library</h2>
-                                <div className='flex items-center gap-3'>
-                                    <button
-                                        onClick={() => setSidebarOpen(false)}
-                                        className="p-2 rounded hover:bg-gray-100"
-                                        aria-label="Close section library"
-                                    >
-                                        <CloseIcon className="w-5 h-5 text-gray-500" />
-                                    </button>
-                                    <button
-                                        onClick={() => setSidebarPinned((p) => !p)}
-                                        className={`flex items-center px-2 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${sidebarPinned ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
-                                        title={sidebarPinned ? 'Unpin Section Library' : 'Pin Section Library'}
-                                    >
-                                        <Pin className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="p-4 overflow-y-auto h-[calc(100vh-64px)]">
-                                <SectionLibrary onAddSection={handleAddSection} />
-                            </div>
-                        </div>
+                        <AnimatePresence>
+                            {sidebarOpen && (
+                                <motion.div
+                                    key="sidebar-motion"
+                                    initial={{ x: '-100%' }}
+                                    animate={{ x: 0 }}
+                                    exit={{ x: '-100%' }}
+                                    transition={{ type: 'tween', duration: 0.3 }}
+                                    className={`fixed top-0 left-0 bottom-0 w-80 z-40 bg-white border-r border-gray-200 shadow-lg`}
+                                >
+                                    <div className="flex items-center justify-between p-4 border-b border-gray-100">
+                                        <h2 className="text-lg font-semibold text-gray-900">Section Library</h2>
+                                        <div className='flex items-center gap-3'>
+                                            <button
+                                                onClick={() => setSidebarOpen(false)}
+                                                className="p-2 rounded hover:bg-gray-100"
+                                                aria-label="Close section library"
+                                            >
+                                                <CloseIcon className="w-5 h-5 text-gray-500" />
+                                            </button>
+                                            <button
+                                                onClick={() => setSidebarPinned((p) => !p)}
+                                                className={`flex items-center px-2 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${sidebarPinned ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                                                title={sidebarPinned ? 'Unpin Section Library' : 'Pin Section Library'}
+                                            >
+                                                <Pin className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="p-4 overflow-y-auto h-[calc(100vh-64px)]">
+                                        <SectionLibrary onAddSection={handleAddSection} />
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </>
                 )}
 
@@ -339,19 +489,28 @@ export default function WebsiteBuilderClient() {
                         </div>
                     </div>
                 </div>
-
-
             </div>
 
 
             {/* Section Editor Modal */}
-            {editingSection && (
-                <SectionEditor
-                    section={editingSection}
-                    onSave={handleSaveSection}
-                    onCancel={() => setEditingSection(null)}
-                />
-            )}
+            <AnimatePresence>
+                {editingSection && (
+                    <motion.div
+                        key="section-editor-modal"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.2 }}
+                        className="fixed inset-0 z-50 flex items-center justify-center"
+                    >
+                        <SectionEditor
+                            section={editingSection}
+                            onSave={handleSaveSection}
+                            onCancel={() => setEditingSection(null)}
+                        />
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 } 

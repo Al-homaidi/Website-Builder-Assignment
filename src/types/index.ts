@@ -6,6 +6,20 @@ export interface Section {
     imageUrl?: string;
     backgroundColor?: string;
     textColor?: string;
+    titleColor?: string;
+    descriptionColor?: string;
+    cardColor?: string;
+    cardTitleColor?: string;
+    cardDescriptionColor?: string;
+    cardIconColor?: string;
+    cardIconBackgroundColor?: string;
+    MenuItemsColor?: string;
+    LogotextColor?: string;
+    RoundedImage?: string;
+    buttonTextColor?: string;
+    buttonbackgroundColor?: string;
+    iconColor?: string;
+    iconBackgroundColor?: string;
     order: number;
     content?: Record<string, unknown>;
 }

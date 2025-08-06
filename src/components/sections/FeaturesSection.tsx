@@ -25,6 +25,13 @@ export default function FeaturesSection({ section, isEditing, onEdit }: Features
     const description = (content.description as string) || section.description;
     const backgroundColor = (content.backgroundColor as string) || section.backgroundColor || '#ffffff';
     const textColor = (content.textColor as string) || section.textColor || '#1e293b';
+    const titleColor = (content.titleColor as string) || '#000000';
+    const descriptionColor = (content.descriptionColor as string) || '#1e293b';
+    const cardColor = (content.cardColor as string) || '#ffffff';
+    const cardTitleColor = (content.cardTitleColor as string) || '#000000';
+    const cardDescriptionColor = (content.cardDescriptionColor as string) || '#666666';
+    const cardIconColor = (content.cardIconColor as string) || '#3b82f6';
+    const cardIconBackgroundColor = (content.cardIconBackgroundColor as string) || '#dbeafe';
 
     return (
         <section
@@ -36,11 +43,17 @@ export default function FeaturesSection({ section, isEditing, onEdit }: Features
         >
             <div className="max-w-6xl mx-auto">
                 <div className="text-center mb-[3vw]">
-                    <h2 className="text-[2.5vw] md:text-[3vw] font-bold mb-[1vw]">
+                    <h2
+                        className="sm:text-4xl font-bold mb-[1vw]"
+                        style={{ color: titleColor }}
+                    >
                         {title}
                     </h2>
                     {description && (
-                        <p className="text-[1.2vw] text-gray-600 max-w-2xl mx-auto">
+                        <p
+                            className="max-w-2xl mx-auto"
+                            style={{ color: descriptionColor }}
+                        >
                             {description}
                         </p>
                     )}
@@ -52,13 +65,27 @@ export default function FeaturesSection({ section, isEditing, onEdit }: Features
                         return (
                             <div
                                 key={index}
-                                className="p-[1.5vw] bg-white rounded-[0.5vw] shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200"
+                                className="p-[10px] rounded shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200"
+                                style={{ backgroundColor: cardColor }}
                             >
-                                <div className="w-[3vw] h-[3vw] bg-blue-100 rounded-[0.5vw] flex items-center justify-center mb-[1vw]">
-                                    <IconComponent className="w-[1.5vw] h-[1.5vw] text-blue-600" />
+                                <div
+                                    className="w-[40px] h-[40px] rounded flex items-center justify-center mb-[10px]"
+                                    style={{ backgroundColor: cardIconBackgroundColor }}
+                                >
+                                    <IconComponent
+                                        className="w-[50%] h-[50%]"
+                                        style={{ color: cardIconColor }}
+                                    />
                                 </div>
-                                <h3 className="text-[1.2vw] font-semibold mb-[0.5vw]">{feature.title}</h3>
-                                <p className="text-gray-600">{feature.description}</p>
+                                <h3
+                                    className="font-semibold"
+                                    style={{ color: cardTitleColor }}
+                                >
+                                    {feature.title}
+                                </h3>
+                                <p style={{ color: cardDescriptionColor }}>
+                                    {feature.description}
+                                </p>
                             </div>
                         );
                     })}
