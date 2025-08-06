@@ -1,6 +1,19 @@
 import { Section } from '@/types';
 import { Target, Users, Eye, Flag, Heart, Star, Zap, Shield, Check, Award, Globe, Lightbulb } from 'lucide-react';
 
+interface AboutSectionItem {
+    type: 'mission' | 'values';
+    title: string;
+    description?: string;
+    values?: string[];
+    icon: string;
+    titleColor?: string;
+    descriptionColor?: string;
+    valuesColor?: string;
+    iconColor?: string;
+    iconBackgroundColor?: string;
+}
+
 interface AboutSectionProps {
     section: Section;
     isEditing?: boolean;
@@ -32,14 +45,14 @@ export default function AboutSection({ section, isEditing, onEdit }: AboutSectio
     const titleColor = (content.titleColor as string) || '#000000';
     const descriptionColor = (content.descriptionColor as string) || '#1e293b';
 
-    const sections = (content.sections as any[]) || [
+    const sections = (content.sections as AboutSectionItem[]) || [
         {
             type: 'mission',
             title: 'Our Mission',
             description: 'To provide the best solutions for our customers',
             icon: 'Target',
             titleColor: '#000000',
-            descriptionColor: '#666666'
+            descriptionColor: '#666666',
         },
         {
             type: 'values',
@@ -47,8 +60,8 @@ export default function AboutSection({ section, isEditing, onEdit }: AboutSectio
             values: ['Innovation', 'Quality', 'Customer Focus'],
             icon: 'Users',
             titleColor: '#000000',
-            valuesColor: '#666666'
-        }
+            valuesColor: '#666666',
+        },
     ];
 
     return (
@@ -79,7 +92,7 @@ export default function AboutSection({ section, isEditing, onEdit }: AboutSectio
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-[3vw] items-center">
                     <div>
                         <div className="space-y-[1.5vw]">
-                            {sections.map((section: any, index: number) => {
+                            {sections.map((section: AboutSectionItem, index: number) => {
                                 const IconComponent = iconMap[section.icon as keyof typeof iconMap] || Target;
                                 return (
                                     <div key={index} className="flex items-start space-x-[1vw]">
@@ -105,7 +118,7 @@ export default function AboutSection({ section, isEditing, onEdit }: AboutSectio
                                                 </p>
                                             ) : (
                                                 <ul className="space-y-[0.5vw]">
-                                                    {(section.values as string[])?.map((value: string, valueIndex: number) => (
+                                                    {(section.values ?? []).map((value: string, valueIndex: number) => (
                                                         <li
                                                             key={valueIndex}
                                                             className="flex items-center"

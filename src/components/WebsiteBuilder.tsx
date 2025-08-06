@@ -18,7 +18,6 @@ import {
 } from '@dnd-kit/sortable';
 import { Section, WebsiteConfig } from '@/types';
 import SectionLibrary from './SectionLibrary';
-import SectionRenderer from './SectionRenderer';
 import SectionEditor from './SectionEditor';
 import SortableSection from './SortableSection';
 import {
@@ -30,9 +29,7 @@ import {
     Pin,
     X as CloseIcon,
     MoreVertical,
-    PinOff,
     Trash2,
-    Edit
 } from 'lucide-react';
 import Swal from 'sweetalert2';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -44,7 +41,6 @@ export default function WebsiteBuilderClient() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [sidebarPinned, setSidebarPinned] = useState(true);
     const [menuOpen, setMenuOpen] = useState(false);
-    const [saveNotification, setSaveNotification] = useState(false);
 
     // Load data from localStorage on component mount
     useEffect(() => {
@@ -113,10 +109,6 @@ export default function WebsiteBuilderClient() {
         localStorage.setItem('websiteBuilder_previewMode', JSON.stringify(isPreviewMode));
     }, [isPreviewMode]);
 
-    const showSaveNotification = () => {
-        setSaveNotification(true);
-        setTimeout(() => setSaveNotification(false), 2000);
-    };
 
 
     const sensors = useSensors(
@@ -241,6 +233,13 @@ export default function WebsiteBuilderClient() {
             });
         }
     };
+
+    // Temporary notification function to fix build error
+    function showSaveNotification() {
+        // You can replace this with a real notification system
+        // For now, just log to the console
+        // console.log('Changes saved!');
+    }
 
 
     const sortedSections = sections.sort((a, b) => a.order - b.order);

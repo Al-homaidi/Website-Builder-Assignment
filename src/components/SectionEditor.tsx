@@ -1,9 +1,58 @@
 'use client';
 
 import { Section } from '@/types';
-import { X, Palette, Type, Image, Plus, Minus, Eye } from 'lucide-react';
+import { X, Plus, Minus, } from 'lucide-react';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// Define types for array items
+interface MenuItem {
+    text: string;
+    url: string;
+}
+interface FeatureItem {
+    title: string;
+    description: string;
+    icon: string;
+}
+interface AboutSectionItem {
+    type: 'mission' | 'values';
+    title: string;
+    description?: string;
+    values?: string[];
+    icon: string;
+    titleColor?: string;
+    descriptionColor?: string;
+    valuesColor?: string;
+    iconColor?: string;
+    iconBackgroundColor?: string;
+}
+interface ContactItem {
+    title: string;
+    subtitle: string;
+    icon: string;
+    iconColor?: string;
+    iconBackgroundColor?: string;
+    titleColor?: string;
+    subtitleColor?: string;
+}
+interface FooterSectionItem {
+    type: 'description' | 'links' | 'contact' | 'social';
+    title: string;
+    subtitle?: string;
+    values?: { text: string; url: string; isLink: boolean }[];
+    socialLinks?: SocialLink[];
+    titleColor?: string;
+    subtitleColor?: string;
+    valuesColor?: string;
+}
+interface SocialLink {
+    platform: string;
+    url: string;
+    icon: string;
+    iconColor?: string;
+    iconBackgroundColor?: string;
+}
 
 interface SectionEditorProps {
     section: Section;
@@ -25,28 +74,35 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
         onSave(updatedSection);
     };
 
-    const updateContent = (key: string, value: any) => {
+    const updateContent = (key: string, value: unknown) => {
         setContent(prev => ({ ...prev, [key]: value }));
     };
 
-    const updateArrayContent = (key: string, index: number, value: any) => {
+    const updateArrayContent = (
+        key: string,
+        index: number,
+        value: MenuItem | FeatureItem | AboutSectionItem | ContactItem | FooterSectionItem | SocialLink | string
+    ) => {
         setContent(prev => {
-            const array = [...(prev[key] as any[] || [])];
+            const array = Array.isArray(prev[key]) ? [...(prev[key] as unknown[])] : [];
             array[index] = value;
             return { ...prev, [key]: array };
         });
     };
 
-    const addArrayItem = (key: string, defaultValue: any) => {
+    const addArrayItem = (
+        key: string,
+        defaultValue: MenuItem | FeatureItem | AboutSectionItem | ContactItem | FooterSectionItem | SocialLink | string
+    ) => {
         setContent(prev => {
-            const array = [...(prev[key] as any[] || []), defaultValue];
+            const array = Array.isArray(prev[key]) ? [...(prev[key] as unknown[]), defaultValue] : [defaultValue];
             return { ...prev, [key]: array };
         });
     };
 
     const removeArrayItem = (key: string, index: number) => {
         setContent(prev => {
-            const array = [...(prev[key] as any[] || [])];
+            const array = Array.isArray(prev[key]) ? [...(prev[key] as unknown[])] : [];
             array.splice(index, 1);
             return { ...prev, [key]: array };
         });
@@ -133,7 +189,7 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
 
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Menu Items</label>
-                {(content.menuItems as any[])?.map((item: any, index: number) => (
+                {(content.menuItems as MenuItem[])?.map((item: MenuItem, index: number) => (
                     <div key={index} className="space-y-2 mb-4 p-3 border border-gray-200 rounded-lg">
                         <div className="flex gap-2">
                             <input
@@ -367,7 +423,7 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
 
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Features</label>
-                {(content.features as any[])?.map((feature: any, index: number) => (
+                {(content.features as FeatureItem[])?.map((feature: FeatureItem, index: number) => (
                     <div key={index} className="border border-gray-200 rounded-lg p-4 space-y-3">
                         <div className="flex justify-between items-center">
                             <h4 className="font-medium">Feature {index + 1}</h4>
@@ -537,7 +593,7 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
             {/* About Sections */}
             <div className="border-t pt-4">
                 <h4 className="text-sm font-medium text-gray-700 mb-3">About Sections</h4>
-                {(content.sections as any[])?.map((section: any, index: number) => (
+                {(content.sections as AboutSectionItem[])?.map((section: AboutSectionItem, index: number) => (
                     <div key={index} className="border border-gray-200 rounded-lg p-4 space-y-3 mb-4">
                         <div className="flex justify-between items-center">
                             <h5 className="font-medium">{section.type === 'mission' ? 'Mission Section' : 'Values Section'}</h5>
@@ -554,7 +610,7 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
                             <label className="block text-xs text-gray-600 mb-1">Section Type</label>
                             <select
                                 value={section.type || 'mission'}
-                                onChange={(e) => updateArrayContent('sections', index, { ...section, type: e.target.value })}
+                                onChange={(e) => updateArrayContent('sections', index, { ...section, type: e.target.value as 'mission' | 'values' })}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
                             >
                                 <option value="mission">Mission</option>
@@ -609,13 +665,13 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
                         ) : (
                             <div>
                                 <label className="block text-xs text-gray-600 mb-1">Values</label>
-                                {(section.values as string[])?.map((value: string, valueIndex: number) => (
+                                {(section.values ?? []).map((value: string, valueIndex: number) => (
                                     <div key={valueIndex} className="flex gap-2 mb-2">
                                         <input
                                             type="text"
                                             value={value}
                                             onChange={(e) => {
-                                                const newValues = [...(section.values || [])];
+                                                const newValues = [...(section.values ?? [])];
                                                 newValues[valueIndex] = e.target.value;
                                                 updateArrayContent('sections', index, { ...section, values: newValues });
                                             }}
@@ -625,7 +681,7 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
                                         <button
                                             type="button"
                                             onClick={() => {
-                                                const newValues = [...(section.values || [])];
+                                                const newValues = [...(section.values ?? [])];
                                                 newValues.splice(valueIndex, 1);
                                                 updateArrayContent('sections', index, { ...section, values: newValues });
                                             }}
@@ -638,7 +694,7 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
                                 <button
                                     type="button"
                                     onClick={() => {
-                                        const newValues = [...(section.values || []), 'New Value'];
+                                        const newValues = [...(section.values ?? []), 'New Value'];
                                         updateArrayContent('sections', index, { ...section, values: newValues });
                                     }}
                                     className="flex items-center gap-2 text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg"
@@ -822,7 +878,7 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
             {/* Contact Items */}
             <div className="border-t pt-4">
                 <h4 className="text-sm font-medium text-gray-700 mb-3">Contact Items</h4>
-                {(content.contactItems as any[])?.map((item: any, index: number) => (
+                {(content.contactItems as ContactItem[])?.map((item: ContactItem, index: number) => (
                     <div key={index} className="border border-gray-200 rounded-lg p-4 space-y-3 mb-4">
                         <div className="flex justify-between items-center">
                             <h5 className="font-medium">Contact Item {index + 1}</h5>
@@ -966,7 +1022,7 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
             {/* Footer Sections */}
             <div className="border-t pt-4">
                 <h4 className="text-sm font-medium text-gray-700 mb-3">Footer Sections</h4>
-                {(content.sections as any[])?.map((section: any, index: number) => (
+                {(content.sections as FooterSectionItem[])?.map((section: FooterSectionItem, index: number) => (
                     <div key={index} className="border border-gray-200 rounded-lg p-4 space-y-3 mb-4">
                         <div className="flex justify-between items-center">
                             <h5 className="font-medium">Section {index + 1}</h5>
@@ -983,7 +1039,7 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
                             <label className="block text-xs text-gray-600 mb-1">Type</label>
                             <select
                                 value={section.type || 'description'}
-                                onChange={(e) => updateArrayContent('sections', index, { ...section, type: e.target.value })}
+                                onChange={(e) => updateArrayContent('sections', index, { ...section, type: e.target.value as 'description' | 'links' | 'contact' | 'social' })}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-900 bg-white"
                             >
                                 <option value="description">Text Section</option>
@@ -1020,14 +1076,14 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
                         {(section.type === 'links' || section.type === 'contact') && (
                             <div>
                                 <label className="block text-xs text-gray-600 mb-1">Values</label>
-                                {section.values?.map((item: any, itemIndex: number) => (
+                                {(section.values ?? []).map((item: { text: string; url: string; isLink: boolean }, itemIndex: number) => (
                                     <div key={itemIndex} className="border border-gray-200 rounded p-2 mb-2">
                                         <div className="flex gap-2 mb-2">
                                             <input
                                                 type="text"
                                                 value={item.text || ''}
                                                 onChange={(e) => {
-                                                    const newValues = [...section.values];
+                                                    const newValues = [...(section.values ?? [])];
                                                     newValues[itemIndex] = { ...item, text: e.target.value };
                                                     updateArrayContent('sections', index, { ...section, values: newValues });
                                                 }}
@@ -1038,7 +1094,7 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
                                                 type="text"
                                                 value={item.url || ''}
                                                 onChange={(e) => {
-                                                    const newValues = [...section.values];
+                                                    const newValues = [...(section.values ?? [])];
                                                     newValues[itemIndex] = { ...item, url: e.target.value };
                                                     updateArrayContent('sections', index, { ...section, values: newValues });
                                                 }}
@@ -1050,7 +1106,7 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
                                                     type="checkbox"
                                                     checked={item.isLink || false}
                                                     onChange={(e) => {
-                                                        const newValues = [...section.values];
+                                                        const newValues = [...(section.values ?? [])];
                                                         newValues[itemIndex] = { ...item, isLink: e.target.checked };
                                                         updateArrayContent('sections', index, { ...section, values: newValues });
                                                     }}
@@ -1060,7 +1116,7 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
                                             <button
                                                 type="button"
                                                 onClick={() => {
-                                                    const newValues = section.values.filter((_: any, i: number) => i !== itemIndex);
+                                                    const newValues = (section.values ?? []).filter((_: { text: string; url: string; isLink: boolean }, i: number) => i !== itemIndex);
                                                     updateArrayContent('sections', index, { ...section, values: newValues });
                                                 }}
                                                 className="text-red-600 hover:bg-red-50 p-1 rounded text-xs"
@@ -1073,7 +1129,7 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
                                 <button
                                     type="button"
                                     onClick={() => {
-                                        const newValues = [...(section.values || []), { text: '', url: '', isLink: false }];
+                                        const newValues = [...(section.values ?? []), { text: '', url: '', isLink: false }];
                                         updateArrayContent('sections', index, { ...section, values: newValues });
                                     }}
                                     className="text-blue-600 hover:bg-blue-50 px-2 py-1 rounded text-xs"
@@ -1087,13 +1143,13 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
                         {section.type === 'social' && (
                             <div>
                                 <label className="block text-xs text-gray-600 mb-1">Social Links</label>
-                                {section.socialLinks?.map((social: any, socialIndex: number) => (
+                                {(section.socialLinks ?? []).map((social: SocialLink, socialIndex: number) => (
                                     <div key={socialIndex} className="border border-gray-200 rounded p-2 mb-2">
                                         <div className="grid grid-cols-2 gap-2 mb-2">
                                             <select
                                                 value={social.platform || 'Twitter'}
                                                 onChange={(e) => {
-                                                    const newSocialLinks = [...section.socialLinks];
+                                                    const newSocialLinks = [...(section.socialLinks ?? [])];
                                                     newSocialLinks[socialIndex] = { ...social, platform: e.target.value, icon: e.target.value };
                                                     updateArrayContent('sections', index, { ...section, socialLinks: newSocialLinks });
                                                 }}
@@ -1110,7 +1166,7 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
                                                 type="text"
                                                 value={social.url || ''}
                                                 onChange={(e) => {
-                                                    const newSocialLinks = [...section.socialLinks];
+                                                    const newSocialLinks = [...(section.socialLinks ?? [])];
                                                     newSocialLinks[socialIndex] = { ...social, url: e.target.value };
                                                     updateArrayContent('sections', index, { ...section, socialLinks: newSocialLinks });
                                                 }}
@@ -1125,7 +1181,7 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
                                                     type="color"
                                                     value={social.iconColor || '#1da1f2'}
                                                     onChange={(e) => {
-                                                        const newSocialLinks = [...section.socialLinks];
+                                                        const newSocialLinks = [...(section.socialLinks ?? [])];
                                                         newSocialLinks[socialIndex] = { ...social, iconColor: e.target.value };
                                                         updateArrayContent('sections', index, { ...section, socialLinks: newSocialLinks });
                                                     }}
@@ -1138,7 +1194,7 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
                                                     type="color"
                                                     value={social.iconBackgroundColor || '#1da1f2'}
                                                     onChange={(e) => {
-                                                        const newSocialLinks = [...section.socialLinks];
+                                                        const newSocialLinks = [...(section.socialLinks ?? [])];
                                                         newSocialLinks[socialIndex] = { ...social, iconBackgroundColor: e.target.value };
                                                         updateArrayContent('sections', index, { ...section, socialLinks: newSocialLinks });
                                                     }}
@@ -1149,7 +1205,7 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
                                         <button
                                             type="button"
                                             onClick={() => {
-                                                const newSocialLinks = section.socialLinks.filter((_: any, i: number) => i !== socialIndex);
+                                                const newSocialLinks = (section.socialLinks ?? []).filter((_: SocialLink, i: number) => i !== socialIndex);
                                                 updateArrayContent('sections', index, { ...section, socialLinks: newSocialLinks });
                                             }}
                                             className="text-red-600 hover:bg-red-50 p-1 rounded text-xs mt-2"
@@ -1162,7 +1218,7 @@ export default function SectionEditor({ section, onSave, onCancel }: SectionEdit
                                 <button
                                     type="button"
                                     onClick={() => {
-                                        const newSocialLinks = [...(section.socialLinks || []), {
+                                        const newSocialLinks = [...(section.socialLinks ?? []), {
                                             platform: 'Twitter',
                                             url: 'https://twitter.com',
                                             icon: 'Twitter',

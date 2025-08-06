@@ -19,8 +19,55 @@ const iconMap = {
     MapPin
 };
 
+type FooterSectionContent = {
+    copyright?: string;
+    title?: string;
+    description?: string;
+    backgroundColor?: string;
+    textColor?: string;
+    titleColor?: string;
+    descriptionColor?: string;
+    sections?: FooterSectionBlock[];
+};
+
+type FooterSectionBlock =
+    | {
+        type: 'description';
+        title: string;
+        subtitle: string;
+        titleColor?: string;
+        subtitleColor?: string;
+    }
+    | {
+        type: 'links' | 'contact';
+        title: string;
+        values: FooterSectionLink[];
+        titleColor?: string;
+        valuesColor?: string;
+    }
+    | {
+        type: 'social';
+        title: string;
+        socialLinks: FooterSectionSocial[];
+        titleColor?: string;
+    };
+
+type FooterSectionLink = {
+    text: string;
+    url: string;
+    isLink: boolean;
+};
+
+type FooterSectionSocial = {
+    platform: string;
+    url: string;
+    icon: keyof typeof iconMap;
+    iconColor?: string;
+    iconBackgroundColor?: string;
+};
+
 export default function FooterSection({ section, isEditing, onEdit }: FooterSectionProps) {
-    const content = section.content || {};
+    const content = section.content as FooterSectionContent || {};
     const copyright = (content.copyright as string) || '© 2024 My Website. All rights reserved.';
     const title = (content.title as string) || section.title || 'Footer';
     const description = (content.description as string) || section.description;
@@ -28,7 +75,7 @@ export default function FooterSection({ section, isEditing, onEdit }: FooterSect
     const textColor = (content.textColor as string) || section.textColor || '#ffffff';
     const titleColor = (content.titleColor as string) || '#ffffff';
     const descriptionColor = (content.descriptionColor as string) || '#cbd5e1';
-    const sections = (content.sections as any[]) || [
+    const sections = content.sections || [
         {
             type: 'description',
             title: 'Footer',
@@ -84,7 +131,7 @@ export default function FooterSection({ section, isEditing, onEdit }: FooterSect
         >
             <div className="max-w-6xl mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[3vw] mb-[3vw]">
-                    {sections.map((section: any, index: number) => (
+                    {sections.map((section: FooterSectionBlock, index: number) => (
                         <div key={index} className="space-y-[1vw]">
                             <h3
                                 className="sm:text-2xl font-semibold mb-[1vw]"
@@ -104,7 +151,7 @@ export default function FooterSection({ section, isEditing, onEdit }: FooterSect
 
                             {section.type === 'links' && (
                                 <ul className="space-y-[0.5vw]">
-                                    {section.values?.map((item: any, itemIndex: number) => (
+                                    {section.values?.map((item: FooterSectionLink, itemIndex: number) => (
                                         <li key={itemIndex}>
                                             {item.isLink ? (
                                                 <a
@@ -129,7 +176,7 @@ export default function FooterSection({ section, isEditing, onEdit }: FooterSect
 
                             {section.type === 'contact' && (
                                 <ul className="space-y-[0.5vw]">
-                                    {section.values?.map((item: any, itemIndex: number) => (
+                                    {section.values?.map((item: FooterSectionLink, itemIndex: number) => (
                                         <li key={itemIndex}>
                                             {item.isLink ? (
                                                 <a
@@ -154,8 +201,8 @@ export default function FooterSection({ section, isEditing, onEdit }: FooterSect
 
                             {section.type === 'social' && (
                                 <div className="flex flex-wrap gap-[0.8vw]">
-                                    {section.socialLinks?.map((social: any, socialIndex: number) => {
-                                        const IconComponent = iconMap[social.icon as keyof typeof iconMap] || Twitter;
+                                    {section.socialLinks?.map((social: FooterSectionSocial, socialIndex: number) => {
+                                        const IconComponent = iconMap[social.icon] || Twitter;
                                         return (
                                             <a
                                                 key={socialIndex}

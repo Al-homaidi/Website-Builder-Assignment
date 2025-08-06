@@ -1,6 +1,16 @@
 import { Section } from '@/types';
 import { Mail, Phone, MapPin, Send, Clock, Globe, MessageCircle, Building, User, Calendar } from 'lucide-react';
 
+interface ContactItem {
+    title: string;
+    subtitle: string;
+    icon: string;
+    iconColor?: string;
+    iconBackgroundColor?: string;
+    titleColor?: string;
+    subtitleColor?: string;
+}
+
 interface ContactSectionProps {
     section: Section;
     isEditing?: boolean;
@@ -32,7 +42,7 @@ export default function ContactSection({ section, isEditing, onEdit }: ContactSe
     const descriptionColor = (content.descriptionColor as string) || '#666666';
     const buttonbackgroundColor = (content.buttonbackgroundColor as string) || "#145dfb";
     const buttonTextColor = (content.buttonTextColor as string) || "#fff";
-    const contactItems = (content.contactItems as any[]) || [
+    const contactItems = (content.contactItems as ContactItem[]) || [
         {
             title: 'Email',
             subtitle: 'contact@example.com',
@@ -90,7 +100,7 @@ export default function ContactSection({ section, isEditing, onEdit }: ContactSe
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-[3vw]">
                     <div className="space-y-[2vw]">
-                        {contactItems.map((item: any, index: number) => {
+                        {contactItems.map((item: ContactItem, index: number) => {
                             const IconComponent = iconMap[item.icon as keyof typeof iconMap] || Mail;
                             return (
                                 <div key={index} className="flex items-start space-x-[1vw]">
